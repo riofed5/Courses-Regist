@@ -38,11 +38,11 @@ export function saveCourse(course) {
   return function(dispatch, getState) {
     dispatch(beginApiCall());
     return courseApi
-      .saveCourse(course)
-      .then(savedCourse => {
+      .addCourse(course)
+      .then(addedCourse => {
         course.id
-          ? dispatch(updateCourseSuccess(savedCourse))
-          : dispatch(createCourseSuccess(savedCourse));
+          ? dispatch(updateCourseSuccess(addedCourse))
+          : dispatch(createCourseSuccess(addedCourse));
       })
       .catch(error => {
         dispatch(apiCallError(error));
@@ -51,3 +51,11 @@ export function saveCourse(course) {
   };
 }
 
+export function deleteCourse(course) {
+  return function(dispatch) {
+    // Doing optimistic delete, so not dispatching begin/end api call
+    // actions, or apiCallError action since we're not showing the loading status for this.
+    dispatch(deleteCourseOptimistic(course));
+    return courseApi.deleteCourse(course.id);
+  };
+}
